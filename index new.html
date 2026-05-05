@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Not IF · Sherry's Way</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--g50:#EAF3DE;--g100:#C0DD97;--g400:#639922;--g600:#3B6D11;--g800:#27500A;--cream:#F8F7F4;--border:0.5px solid #E4E4E0;--r:16px;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--cream);max-width:390px;margin:0 auto;min-height:100vh;color:#2C2C2A;}
+.topbar{background:#fff;padding:18px 20px 12px;border-bottom:var(--border);position:sticky;top:0;z-index:10;}
+.wordmark{font-size:19px;font-weight:500;color:var(--g800);letter-spacing:-0.3px;}
+.sub{font-size:11px;color:var(--g400);margin-top:2px;}
+.content{padding:14px 16px 100px;}
+.screen{display:none;}
+.screen.active{display:block;}
+.card{background:#fff;border:var(--border);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;}
+.sec{font-size:11px;font-weight:500;color:#888;text-transform:uppercase;letter-spacing:.06em;margin:14px 0 8px;}
+.stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px;}
+.stat{background:var(--g50);border-radius:12px;padding:11px 13px;}
+.slabel{font-size:10px;color:var(--g600);margin-bottom:2px;}
+.sval{font-size:22px;font-weight:500;color:var(--g800);line-height:1.1;}
+.sunit{font-size:11px;font-weight:400;color:var(--g400);}
+.sbase{font-size:10px;color:var(--g400);margin-top:3px;}
+.coach-strip{background:#fff;border:var(--border);border-left:3px solid var(--g600);border-radius:var(--r);border-top-left-radius:4px;border-bottom-left-radius:4px;padding:13px 15px;margin-bottom:10px;}
+.clabel{font-size:10px;font-weight:500;color:var(--g600);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+.ctext{font-size:14px;color:var(--g800);line-height:1.55;}
+.window-pill{background:var(--g50);border-radius:12px;padding:11px 15px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+.wstatus{font-size:14px;font-weight:500;color:var(--g800);}
+.wsub{font-size:11px;color:var(--g600);margin-top:1px;}
+.wdot{width:9px;height:9px;border-radius:50%;background:var(--g400);}
+.mrow{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.mname{font-size:12px;color:#666;width:78px;flex-shrink:0;}
+.bwrap{flex:1;height:5px;background:#F1EFE8;border-radius:3px;overflow:hidden;}
+.bfill{height:100%;border-radius:3px;background:var(--g400);transition:width .5s ease;}
+.mvals{font-size:11px;font-weight:500;color:var(--g800);width:66px;text-align:right;flex-shrink:0;}
+.streak-row{background:var(--g50);border-radius:12px;padding:12px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;}
+.snum{font-size:30px;font-weight:500;color:var(--g800);}
+.slbl{font-size:12px;color:var(--g600);line-height:1.4;}
+.allergy{background:#FCEBEB;border-radius:10px;padding:10px 13px;margin-bottom:10px;font-size:13px;color:#A32D2D;font-weight:500;}
+.med-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:var(--border);}
+.med-row:last-child{border-bottom:none;}
+.mn{font-size:13px;color:#2C2C2A;}
+.mt{font-size:11px;color:#888;margin-top:1px;}
+.chk{width:24px;height:24px;border-radius:50%;border:1.5px solid #D3D1C7;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;transition:all .15s;}
+.chk.done{background:var(--g600);border-color:var(--g600);color:#fff;}
+.inp{width:100%;border:var(--border);border-radius:10px;padding:10px 13px;font-size:14px;color:#2C2C2A;font-family:inherit;background:var(--cream);outline:none;}
+.inp:focus{border-color:var(--g400);background:#fff;}
+.igrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px;}
+.ig{display:flex;flex-direction:column;gap:3px;}
+.il{font-size:11px;color:#666;}
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+.tag{padding:8px 12px;border-radius:20px;font-size:13px;border:var(--border);color:#666;cursor:pointer;background:#fff;transition:all .15s;}
+.tag.on{background:var(--g50);border-color:var(--g100);color:var(--g800);}
+.sbtn{width:100%;padding:14px;border-radius:14px;background:var(--g600);color:#fff;font-size:15px;font-weight:500;border:none;cursor:pointer;margin-top:12px;font-family:inherit;}
+.sbtn:active{background:var(--g800);}
+.sbtn:disabled{opacity:.45;}
+.hist-item{padding:12px 0;border-bottom:var(--border);}
+.hist-item:last-child{border-bottom:none;}
+.hdate{font-size:13px;font-weight:500;color:#2C2C2A;}
+.hnote{font-size:12px;color:#666;margin-top:3px;line-height:1.4;}
+.hbadges{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;}
+.hb{font-size:11px;padding:2px 9px;border-radius:10px;background:var(--g50);color:var(--g800);}
+.hb.w{background:#FCEBEB;color:#A32D2D;}
+.plan-row{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 0;border-bottom:var(--border);}
+.plan-row:last-child{border-bottom:none;}
+.pk{font-size:13px;color:#666;flex:1;}
+.pv{font-size:13px;color:#2C2C2A;font-weight:500;text-align:right;flex:1;}
+.sync-card{background:var(--g50);border:1px solid var(--g100);border-radius:var(--r);padding:15px;margin-bottom:10px;}
+.sync-preview{background:#fff;border:var(--border);border-radius:10px;padding:11px;font-size:11px;color:#666;line-height:1.6;max-height:140px;overflow-y:auto;margin-bottom:10px;font-family:monospace;white-space:pre-wrap;}
+.confirm{text-align:center;font-size:13px;color:var(--g600);margin-top:8px;display:none;}
+.chat-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;max-height:320px;overflow-y:auto;}
+.bbl{padding:11px 14px;border-radius:18px;font-size:14px;line-height:1.5;max-width:90%;}
+.bbl.ai{background:var(--g50);color:var(--g800);border-bottom-left-radius:4px;align-self:flex-start;}
+.bbl.user{background:var(--g600);color:#fff;border-bottom-right-radius:4px;align-self:flex-end;}
+.chat-row{display:flex;gap:8px;margin-top:8px;}
+.cinp{flex:1;border:var(--border);border-radius:22px;padding:10px 15px;font-size:14px;font-family:inherit;background:var(--cream);outline:none;}
+.cinp:focus{border-color:var(--g400);}
+.csend{width:40px;height:40px;border-radius:50%;background:var(--g600);color:#fff;border:none;cursor:pointer;font-size:17px;flex-shrink:0;}
+.csend:disabled{opacity:.4;}
+.typing{display:flex;gap:4px;align-items:center;padding:11px 14px;background:var(--g50);border-radius:18px;border-bottom-left-radius:4px;width:fit-content;}
+.td{width:6px;height:6px;border-radius:50%;background:var(--g400);animation:bop 1.2s infinite;}
+.td:nth-child(2){animation-delay:.2s;}.td:nth-child(3){animation-delay:.4s;}
+@keyframes bop{0%,60%,100%{transform:translateY(0);}30%{transform:translateY(-5px);}}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+.chip{padding:6px 12px;border-radius:20px;font-size:12px;border:var(--border);color:#666;cursor:pointer;background:#fff;}
+.w1note{background:var(--g50);border-radius:10px;padding:10px 13px;margin-bottom:10px;font-size:12px;color:var(--g800);line-height:1.5;}
+.save-confirm{text-align:center;font-size:13px;color:var(--g600);margin-top:8px;display:none;}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:390px;display:flex;border-top:var(--border);background:#fff;padding-bottom:env(safe-area-inset-bottom,8px);}
+.nb{flex:1;padding:10px 2px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;border:none;background:transparent;}
+.ni{width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:15px;}
+.nl{font-size:9px;color:#888;}
+.nb.active .nl{color:var(--g600);font-weight:500;}
+.nb.active .ni{background:var(--g50);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+    <div><div class="wordmark">Not IF · Sherry's Way</div><div class="sub" id="date-label"></div></div>
+    <div style="width:32px;height:32px;border-radius:50%;background:var(--g50);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:var(--g800);">S</div>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="screen active" id="s-today">
+    <div class="allergy">⚠ Amoxicillin allergy — flag with every doctor</div>
+    <div class="window-pill">
+      <div><div class="wstatus" id="win-status">Window open</div><div class="wsub">9:00 AM – 10:15 PM · your rules</div></div>
+      <div class="wdot" id="win-dot"></div>
+    </div>
+    <div class="coach-strip">
+      <div class="clabel">Coach · Latest</div>
+      <div class="ctext" id="coach-today">Log today to get your coaching note.</div>
+    </div>
+    <div class="sec">Latest Garmin stats</div>
+    <div class="stat-grid">
+      <div class="stat"><div class="slabel">Sleep score</div><div class="sval" id="t-sleep">—</div><div class="sbase">baseline 67</div></div>
+      <div class="stat"><div class="slabel">Resting HR</div><div class="sval" id="t-hr">—<span class="sunit"> bpm</span></div><div class="sbase">baseline 67</div></div>
+      <div class="stat"><div class="slabel">Body battery</div><div class="sval" id="t-bb">—<span class="sunit">%</span></div><div class="sbase">baseline +40</div></div>
+      <div class="stat"><div class="slabel">Stress</div><div class="sval" id="t-stress">—</div><div class="sbase">baseline 37</div></div>
+    </div>
+    <div class="sec">Mission: 68 kg</div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:500;">Progress to goal</div>
+        <div style="font-size:12px;color:var(--g600);background:var(--g50);padding:3px 10px;border-radius:20px;" id="streak-pill">— streak</div>
+      </div>
+      <div id="markers"></div>
+      <div style="font-size:11px;color:#888;margin-top:6px;">68kg · HR 60 · Sleep 80 · Battery 55 · Stress 28</div>
+    </div>
+    <div class="streak-row">
+      <div class="snum" id="streak-num">—</div>
+      <div class="slbl">consecutive days<br>logged on plan</div>
+    </div>
+    <div class="sec">Meds today</div>
+    <div class="card" style="padding:8px 16px;" id="med-list"></div>
+  </div>
+
+  <div class="screen" id="s-log">
+    <div class="w1note" id="w1note">Week 1 — describe everything you ate. After Day 7 just flag exceptions.</div>
+    <div class="sec">Garmin stats</div>
+    <div class="igrid">
+      <div class="ig"><div class="il">Sleep score</div><input class="inp" type="number" id="l-sleep" placeholder="e.g. 74"></div>
+      <div class="ig"><div class="il">Duration</div><input class="inp" type="text" id="l-dur" placeholder="e.g. 6h 20m"></div>
+    </div>
+    <div class="igrid">
+      <div class="ig"><div class="il">Resting HR</div><input class="inp" type="number" id="l-hr" placeholder="e.g. 60"></div>
+      <div class="ig"><div class="il">Body battery</div><input class="inp" type="number" id="l-bb" placeholder="e.g. 43"></div>
+    </div>
+    <div class="igrid">
+      <div class="ig"><div class="il">Stress</div><input class="inp" type="number" id="l-stress" placeholder="e.g. 26"></div>
+      <div class="ig"><div class="il">Weight (kg)</div><input class="inp" type="number" step="0.1" id="l-weight" placeholder="e.g. 77.0"></div>
+    </div>
+    <div class="sec">Activity</div>
+    <div class="tag-row" id="act-tags">
+      <div class="tag" onclick="tog(this)">Yoga</div>
+      <div class="tag" onclick="tog(this)">Walk</div>
+      <div class="tag" onclick="tog(this)">Strength</div>
+      <div class="tag" onclick="tog(this)">Post-meal walk</div>
+      <div class="tag" onclick="tog(this)">Rest day</div>
+    </div>
+    <div class="sec">How you feel</div>
+    <div class="tag-row" id="feel-tags">
+      <div class="tag" onclick="tog(this)">Good day</div>
+      <div class="tag" onclick="tog(this)">Bloated</div>
+      <div class="tag" onclick="tog(this)">Tired</div>
+      <div class="tag" onclick="tog(this)">Low energy</div>
+      <div class="tag" onclick="tog(this)">Chest tight</div>
+      <div class="tag" onclick="tog(this)">Burping</div>
+      <div class="tag" onclick="tog(this)">Poor sleep</div>
+    </div>
+    <div class="sec" id="food-label">Food & notes</div>
+    <textarea class="inp" id="l-notes" rows="3" placeholder="Describe what you ate today..." style="height:85px;resize:none;"></textarea>
+    <button class="sbtn" id="save-btn" onclick="saveLog()">Save today's log</button>
+    <div class="save-confirm" id="save-confirm">Saved ✓ Check Today for your coaching note</div>
+  </div>
+
+  <div class="screen" id="s-coach">
+    <div class="chips" id="chips">
+      <div class="chip" onclick="chip(this)">How am I doing?</div>
+      <div class="chip" onclick="chip(this)">What to eat tonight?</div>
+      <div class="chip" onclick="chip(this)">Review my sleep</div>
+      <div class="chip" onclick="chip(this)">Am I on track?</div>
+    </div>
+    <div class="chat-wrap" id="chat-msgs">
+      <div class="bbl ai">Sherry. I know your plan and your logs. Talk to me.</div>
+    </div>
+    <div class="chat-row">
+      <input class="cinp" id="chat-inp" placeholder="Ask your coach..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="csend" id="send-btn" onclick="sendChat()">↑</button>
+    </div>
+  </div>
+
+  <div class="screen" id="s-history">
+    <div class="sync-card">
+      <div style="font-size:14px;font-weight:500;color:var(--g800);margin-bottom:4px;">Sync to Claude</div>
+      <div style="font-size:12px;color:var(--g600);line-height:1.5;margin-bottom:10px;">Copies unsynced logs. Paste into your Claude Health & Fitness project for full coaching review.</div>
+      <div class="sync-preview" id="sync-preview">No unsynced logs.</div>
+      <button class="sbtn" onclick="doSync()">Copy sync summary ↗</button>
+      <div class="confirm" id="sync-confirm">Copied — paste into Claude now</div>
+    </div>
+    <div class="sec" id="hist-count">All logs</div>
+    <div class="card" style="padding:8px 16px;" id="hist-list"><div style="color:#888;font-size:14px;padding:8px 0;">No logs yet.</div></div>
+  </div>
+
+  <div class="screen" id="s-plan">
+    <div class="allergy">⚠ Amoxicillin allergy — flag with every doctor</div>
+    <div class="sec">Profile</div>
+    <div class="card">
+      <div class="plan-row"><div class="pk">Age / height</div><div class="pv">57 · 5 ft 6 in</div></div>
+      <div class="plan-row"><div class="pk">Start weight</div><div class="pv">77 kg</div></div>
+      <div class="plan-row"><div class="pk">Target</div><div class="pv">68 kg · 4–5 months</div></div>
+      <div class="plan-row"><div class="pk">Protein target</div><div class="pv">80–100 g/day</div></div>
+      <div class="plan-row"><div class="pk">Target intake</div><div class="pv">1,450–1,550 kcal</div></div>
+      <div class="plan-row"><div class="pk">Eating window</div><div class="pv">9 AM – 10:15 PM</div></div>
+    </div>
+    <div class="sec">Morning sequence</div>
+    <div class="card">
+      <div class="plan-row"><div class="pk">On waking</div><div class="pv">Pantocid 40</div></div>
+      <div class="plan-row"><div class="pk">20–25 min later</div><div class="pv">Black coffee ☕</div></div>
+      <div class="plan-row"><div class="pk">After coffee</div><div class="pv">Soaked chia seeds</div></div>
+      <div class="plan-row"><div class="pk">Exercise</div><div class="pv">Yoga or walk + strength</div></div>
+      <div class="plan-row"><div class="pk">9:00 AM</div><div class="pv">Whey isolate shake</div></div>
+    </div>
+    <div class="sec">Meals</div>
+    <div class="card">
+      <div class="plan-row"><div class="pk">Lunch 2 PM</div><div class="pv">Rice + 150g protein + veg</div></div>
+      <div class="plan-row"><div class="pk">2:30 PM</div><div class="pv">Green smoothie + 12–15 nuts</div></div>
+      <div class="plan-row"><div class="pk">4 PM</div><div class="pv">Last coffee (hard cutoff)</div></div>
+      <div class="plan-row"><div class="pk">Dinner 9:30 PM</div><div class="pv">Broth + 150g fish · no rice</div></div>
+      <div class="plan-row"><div class="pk">Close window</div><div class="pv">10:15 PM</div></div>
+    </div>
+    <div class="sec">Supplements</div>
+    <div class="card">
+      <div class="plan-row"><div class="pk">With lunch</div><div class="pv">Omega-3 · D3 · K2 · B12</div></div>
+      <div class="plan-row"><div class="pk">With dinner</div><div class="pv">Softevac + water</div></div>
+      <div class="plan-row"><div class="pk">11:30 PM</div><div class="pv">Mag Glycinate + L-Theanine + Glycine</div></div>
+    </div>
+    <div class="sec">Exercise</div>
+    <div class="card">
+      <div class="plan-row"><div class="pk">Mon / Wed / Fri</div><div class="pv">Walk 3–4 km + Strength</div></div>
+      <div class="plan-row"><div class="pk">Tue / Thu / Sat</div><div class="pv">Yoga (morning only)</div></div>
+      <div class="plan-row"><div class="pk">Sunday</div><div class="pv">Rest</div></div>
+    </div>
+    <div class="sec">Don'ts</div>
+    <div class="card" style="font-size:13px;color:#666;line-height:2;">
+      No coffee before Pantocid · No fruit · No fried dinner · No rice at dinner · No coffee after 4 PM · No Softevac within 2h of sleep stack · No raw onion · No Amoxicillin
+    </div>
+    <div style="height:8px;"></div>
+  </div>
+
+</div>
+
+<div class="nav">
+  <button class="nb active" onclick="go('today',this)"><div class="ni">⊙</div><div class="nl">Today</div></button>
+  <button class="nb" onclick="go('log',this)"><div class="ni">＋</div><div class="nl">Log</div></button>
+  <button class="nb" onclick="go('coach',this)"><div class="ni">✦</div><div class="nl">Coach</div></button>
+  <button class="nb" onclick="go('history',this)"><div class="ni">◷</div><div class="nl">History</div></button>
+  <button class="nb" onclick="go('plan',this)"><div class="ni">≡</div><div class="nl">Plan</div></button>
+</div>
+
+<script>
+const MEDS=[
+  {n:'Pantocid 40',t:'On waking — empty stomach'},
+  {n:'Motinorm DT',t:'Before meals'},
+  {n:'Omega-3 · D3 · K2 · B12',t:'With lunch + nuts'},
+  {n:'Softevac',t:'9:30 PM with dinner'},
+  {n:'Mag Glycinate + L-Theanine + Glycine',t:'11:30 PM sleep stack'}
+];
+const BL={weight:77,hr:67,sleep:67,bb:40,stress:37};
+const TG={weight:68,hr:60,sleep:80,bb:55,stress:28};
+const START=new Date('2026-05-04');
+const SYS=`You are Sherry's strict personal health coach in "Not IF · Sherry's Way". SHERRY: 57F Mumbai. 77kg to 68kg goal. Functional dyspepsia (trapped gas, burping, chest tightness NOT acid reflux). High LDL but excellent HDL 66.9. Early knee OA. Fibroids. Liver cyst benign. SEVERE amoxicillin allergy. PLAN: Pantocid on waking, 25min wait, coffee, chia seeds, yoga OR walk plus strength, 9AM whey isolate water only NO fruit. Lunch 2PM 4-5 tbsp brown rice plus 150g protein plus cooked veg. 2:30PM green smoothie plus 12-15 nuts plus vitamins. 4PM last coffee. Dinner 9:30PM broth plus 150g fish or chicken NO rice done by 10:15PM. Softevac with dinner. 11:30PM Mag Glycinate 300-400mg plus L-Theanine 200mg plus Glycine 3g one heaped teaspoon. EXERCISE: Mon Wed Fri walk 3-4km then strength. Tue Thu Sat morning yoga. Sunday rest. TARGETS: 68kg HR 60 sleep 80 battery 55 stress 28. VOICE: Strict. Direct. 1-2 sentences. No lectures. No that is okay. Call her out when she slips. Brief acknowledgment for wins only.`;
+
+let logs=[],chatHistory=[];
+
+function dk(){const d=new Date();return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function dayNum(){return Math.max(1,Math.ceil((new Date()-START)/86400000));}
+function isW1(){return dayNum()<=7;}
+function LS(k,v){try{if(v===undefined)return JSON.parse(localStorage.getItem(k));localStorage.setItem(k,JSON.stringify(v));}catch(e){return null;}}
+
+function init(){
+  const now=new Date();
+  document.getElementById('date-label').textContent=now.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'long'});
+  const hr=now.getHours();
+  const open=hr>=9&&hr<22;
+  document.getElementById('win-status').textContent=open?'Window open':(hr<9?'Window opens 9 AM':'Window closed');
+  document.getElementById('win-dot').style.background=open?'var(--g400)':'#E24B4A';
+  if(!isW1()){document.getElementById('w1note').style.display='none';document.getElementById('l-notes').placeholder='Flag anything off-plan today...';document.getElementById('food-label').textContent='Notes / exceptions';}
+  renderMeds();
+  seedIfEmpty();
+  loadLogs();
+}
+
+function seedIfEmpty(){
+  if(localStorage.getItem('log:2026-05-04'))return;
+  LS('log:2026-05-04',{date:'2026-05-04',day:1,sleep:92,dur:'7h 37m',hr:60,bb:59,stress:35,weight:77.0,activity:['Walk'],feels:['Good day'],notes:'First walk back 4.09km. No whey isolate. Skipped strength — right call.',coachNote:'Day 1 done. Walk complete, eating window held. Protein low at ~45g — whey arriving fixes this. Bacon not on plan going forward.',synced:false});
+  LS('log:2026-05-05',{date:'2026-05-05',day:2,sleep:68,dur:'6h',hr:60,bb:43,stress:26,weight:null,activity:['Yoga'],feels:['Good day'],notes:'First night off sleeping tablet. Yoga 55min. Glycine underdosed last night, corrected from tonight.',coachNote:'First night off the tablet — 68 is respectable. Stack needs 5-7 nights. Glycine dose corrected. Keep going.',synced:false});
+}
+
+function loadLogs(){
+  logs=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k&&k.startsWith('log:')){try{const v=LS(k);if(v)logs.push(v);}catch(e){}}
+  }
+  logs.sort((a,b)=>b.date.localeCompare(a.date));
+  const today=logs.find(l=>l.date===dk());
+  if(today)populateToday(today);else renderMarkers(BL);
+  renderStreak();
+  renderHistory();
+  renderSyncPreview();
+}
+
+function populateToday(log){
+  if(log.sleep!=null)document.getElementById('t-sleep').textContent=Math.round(log.sleep);
+  if(log.hr!=null)document.getElementById('t-hr').innerHTML=Math.round(log.hr)+'<span class="sunit"> bpm</span>';
+  if(log.bb!=null)document.getElementById('t-bb').innerHTML=Math.round(log.bb)+'<span class="sunit">%</span>';
+  if(log.stress!=null)document.getElementById('t-stress').textContent=Math.round(log.stress);
+  if(log.coachNote)document.getElementById('coach-today').textContent=log.coachNote;
+  renderMarkers(log);
+}
+
+function pct(key,val){
+  if(val==null)return 0;
+  const b=BL[key],t=TG[key],lower=['weight','hr','stress'].includes(key),range=Math.abs(t-b);
+  if(!range)return 0;
+  return Math.min(100,Math.max(0,Math.round((lower?(b-val):(val-b))/range*100)));
+}
+
+function renderMarkers(data){
+  const items=[{key:'weight',label:'Weight',val:data.weight||BL.weight,unit:'kg'},{key:'hr',label:'Resting HR',val:data.hr||BL.hr,unit:'bpm'},{key:'sleep',label:'Sleep',val:data.sleep||BL.sleep,unit:''},{key:'bb',label:'Battery',val:data.bb||BL.bb,unit:''},{key:'stress',label:'Stress',val:data.stress||BL.stress,unit:''}];
+  document.getElementById('markers').innerHTML=items.map(m=>{
+    const p=pct(m.key,m.val),d=m.key==='weight'?parseFloat(m.val).toFixed(1):Math.round(m.val);
+    return`<div class="mrow"><div class="mname">${m.label}</div><div class="bwrap"><div class="bfill" style="width:${p}%"></div></div><div class="mvals">${d}→${TG[m.key]}${m.unit}</div></div>`;
+  }).join('');
+}
+
+function renderStreak(){
+  let s=0;
+  const sorted=[...logs].sort((a,b)=>b.date.localeCompare(a.date));
+  for(let i=0;i<sorted.length;i++){
+    const e=new Date(Date.now()-i*86400000),ek=`${e.getFullYear()}-${String(e.getMonth()+1).padStart(2,'0')}-${String(e.getDate()).padStart(2,'0')}`;
+    if(sorted[i]&&sorted[i].date===ek)s++;else break;
+  }
+  document.getElementById('streak-num').textContent=s;
+  document.getElementById('streak-pill').textContent=s+' day streak';
+}
+
+function renderMeds(){
+  document.getElementById('med-list').innerHTML=MEDS.map((m,i)=>`<div class="med-row"><div><div class="mn">${m.n}</div><div class="mt">${m.t}</div></div><div class="chk" id="chk-${i}" onclick="toggleMed(${i})"></div></div>`).join('');
+}
+
+function toggleMed(i){const el=document.getElementById('chk-'+i);const done=el.classList.toggle('done');el.textContent=done?'✓':'';}
+function tog(el){el.classList.toggle('on');}
+
+function go(id,btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-'+id).classList.add('active');
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  document.querySelector('.content').scrollTop=0;
+}
+
+async function saveLog(){
+  const btn=document.getElementById('save-btn');
+  btn.disabled=true;btn.textContent='Saving...';
+  const today=dk();
+  const activity=[...document.querySelectorAll('#act-tags .tag.on')].map(t=>t.textContent);
+  const feels=[...document.querySelectorAll('#feel-tags .tag.on')].map(t=>t.textContent);
+  const raw={date:today,day:dayNum(),sleep:parseFloat(document.getElementById('l-sleep').value)||null,dur:document.getElementById('l-dur').value||null,hr:parseFloat(document.getElementById('l-hr').value)||null,bb:parseFloat(document.getElementById('l-bb').value)||null,stress:parseFloat(document.getElementById('l-stress').value)||null,weight:parseFloat(document.getElementById('l-weight').value)||null,activity,feels,notes:document.getElementById('l-notes').value||'',synced:false};
+  raw.coachNote=await fetchNote(raw);
+  LS('log:'+today,raw);
+  const idx=logs.findIndex(l=>l.date===today);
+  if(idx>=0)logs[idx]=raw;else logs.unshift(raw);
+  logs.sort((a,b)=>b.date.localeCompare(a.date));
+  populateToday(raw);renderStreak();renderHistory();renderSyncPreview();
+  document.getElementById('save-confirm').style.display='block';
+  btn.disabled=false;btn.textContent='Save today\'s log';
+  setTimeout(()=>{document.getElementById('save-confirm').style.display='none';go('today',document.querySelector('.nb'));},1800);
+}
+
+async function fetchNote(log){
+  const prompt=`Sherry log Day ${log.day}: Sleep ${log.sleep??'?'} score ${log.dur??''}, HR ${log.hr??'?'}bpm, Battery +${log.bb??'?'}, Stress ${log.stress??'?'}, Weight ${log.weight??'?'}kg. Activity: ${(log.activity||[]).join(',')||'none'}. Feels: ${(log.feels||[]).join(',')||'none'}. Notes: ${log.notes||'none'}. Give 1-2 sentence strict coaching note.`;
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:120,system:SYS,messages:[{role:'user',content:prompt}]})});
+    const d=await res.json();
+    return d.content?.find(b=>b.type==='text')?.text||'Log saved.';
+  }catch(e){return'Log saved. Sync to Claude for coaching.';}
+}
+
+async function sendChat(){
+  const inp=document.getElementById('chat-inp');
+  const text=inp.value.trim();if(!text)return;
+  inp.value='';document.getElementById('send-btn').disabled=true;
+  document.getElementById('chips').style.display='none';
+  addBubble('user',text);chatHistory.push({role:'user',content:text});
+  const typing=addTyping();
+  const recent=logs.slice(0,7).map(l=>`${l.date} Day${l.day}: sleep ${l.sleep??'?'}, HR ${l.hr??'?'}, BB ${l.bb??'?'}, stress ${l.stress??'?'}, weight ${l.weight??'?'}kg, activity:${(l.activity||[]).join(',')||'none'}, notes:${l.notes||'none'}`).join('\n');
+  const ctx=`[Recent logs:\n${recent||'none'}]\n\n${text}`;
+  const msgs=[...chatHistory.slice(0,-1),{role:'user',content:ctx}];
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:250,system:SYS,messages:msgs})});
+    const d=await res.json();typing.remove();
+    const reply=d.content?.find(b=>b.type==='text')?.text||'Try again.';
+    chatHistory.push({role:'assistant',content:reply});addBubble('ai',reply);
+  }catch(e){typing.remove();addBubble('ai','Connection issue — try again.');}
+  document.getElementById('send-btn').disabled=false;
+}
+
+function chip(el){document.getElementById('chat-inp').value=el.textContent;sendChat();}
+
+function addBubble(role,text){
+  const w=document.getElementById('chat-msgs');
+  const d=document.createElement('div');d.className='bbl '+role;d.textContent=text;
+  w.appendChild(d);w.scrollTop=w.scrollHeight;return d;
+}
+
+function addTyping(){
+  const w=document.getElementById('chat-msgs');
+  const d=document.createElement('div');d.className='typing';
+  d.innerHTML='<div class="td"></div><div class="td"></div><div class="td"></div>';
+  w.appendChild(d);w.scrollTop=w.scrollHeight;return d;
+}
+
+function renderHistory(){
+  const el=document.getElementById('hist-list');
+  document.getElementById('hist-count').textContent=logs.length+' log'+(logs.length===1?'':'s')+' saved';
+  if(!logs.length){el.innerHTML='<div style="color:#888;font-size:14px;padding:8px 0;">No logs yet.</div>';return;}
+  el.innerHTML=logs.map(l=>{
+    const d=new Date(l.date+'T12:00:00'),label=d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+    const badges=[];
+    if(l.weight)badges.push({t:l.weight.toFixed(1)+'kg',w:false});
+    if(l.sleep)badges.push({t:'Sleep '+Math.round(l.sleep),w:l.sleep<70});
+    if(l.activity?.length)badges.push({t:l.activity[0],w:false});
+    if(!l.synced)badges.push({t:'Unsynced',w:false});
+    return`<div class="hist-item"><div class="hdate">Day ${l.day} · ${label}</div><div class="hnote">${l.coachNote?'"'+l.coachNote.substring(0,80)+'..."':'—'}</div><div class="hbadges">${badges.map(b=>`<div class="hb${b.w?' w':''}">${b.t}</div>`).join('')}</div></div>`;
+  }).join('');
+}
+
+function buildSync(toSync){
+  const sorted=[...toSync].sort((a,b)=>a.date.localeCompare(b.date));
+  let out=`SHERRY HEALTH SYNC — ${sorted.length} day(s) — ${sorted[0].date} to ${sorted[sorted.length-1].date}\n\n`;
+  sorted.forEach(l=>{
+    const d=new Date(l.date+'T12:00:00');
+    out+=`${d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'})} Day ${l.day}:\n`;
+    if(l.weight)out+=`  Weight: ${parseFloat(l.weight).toFixed(1)}kg\n`;
+    if(l.sleep)out+=`  Sleep: ${Math.round(l.sleep)} · ${l.dur||'?'}\n`;
+    if(l.hr)out+=`  HR: ${Math.round(l.hr)}bpm\n`;
+    if(l.bb)out+=`  Battery: +${Math.round(l.bb)}\n`;
+    if(l.stress)out+=`  Stress: ${Math.round(l.stress)}\n`;
+    if(l.activity?.length)out+=`  Activity: ${l.activity.join(', ')}\n`;
+    if(l.feels?.length)out+=`  Feels: ${l.feels.join(', ')}\n`;
+    if(l.notes)out+=`  Notes: ${l.notes}\n`;
+    if(l.coachNote)out+=`  App coach: "${l.coachNote}"\n`;
+    out+='\n';
+  });
+  out+=`Please review as my full health coach with complete project context.`;
+  return out;
+}
+
+function renderSyncPreview(){
+  const u=logs.filter(l=>!l.synced);
+  document.getElementById('sync-preview').textContent=u.length?buildSync(u):'All logs synced.';
+}
+
+function doSync(){
+  const u=logs.filter(l=>!l.synced);
+  if(!u.length){const c=document.getElementById('sync-confirm');c.textContent='Nothing to sync.';c.style.display='block';setTimeout(()=>c.style.display='none',2000);return;}
+  const text=buildSync(u);
+  try{
+    navigator.clipboard.writeText(text);
+    u.forEach(l=>{l.synced=true;LS('log:'+l.date,l);});
+    renderHistory();renderSyncPreview();
+    const c=document.getElementById('sync-confirm');c.textContent='Copied — paste into Claude now';c.style.display='block';
+    setTimeout(()=>c.style.display='none',3000);
+  }catch(e){
+    const c=document.getElementById('sync-confirm');c.textContent='Select text above and copy manually.';c.style.display='block';
+  }
+}
+
+init();
+</script>
+</body>
+</html>
